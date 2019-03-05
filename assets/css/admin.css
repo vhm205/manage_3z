@@ -1,0 +1,34 @@
+* { padding: 0; margin: 0; }
+html, body{
+	padding: 0;
+	box-sizing: border-box;
+}
+.container{
+	margin-top: 20px;
+}
+.pagination{ user-select: none; }
+.msg{
+	position: fixed;
+	bottom: 0;
+	right: 10px;
+	opacity: 0;
+	z-index: 10;
+}
+.input-edit{ margin-top: -20px }
+.img-responsive{
+	width: 50px;
+	height: 50px;
+}
+.icon a i{
+	color: #a59699;
+	font-size: 18px;
+	transition: .2s ease;
+}
+.icon a i:hover{
+	opacity: .5
+}
+.button-link.active{
+	display: block;
+	color: #fff;
+	background: #54D4F4
+}
