@@ -32,11 +32,6 @@
 		var_dump($_SESSION['MENU']);
 		echo '</pre>';
 	}
-	if(isset($_SESSION['PRODUCT'])){
-		echo '<pre>';
-		var_dump($_SESSION['PRODUCT']);
-		echo '</pre>';
-	}
 ?>
 
 <div class="container-fluid">
@@ -127,16 +122,34 @@
 		<div class="card border-danger mb-3">
 		  <div class="card-header">Giỏ hàng 
 		  	(<?php 
-		  		if(isset($_SESSION['PRODUCT'])){
-		  			$isNull = null;
-		  		}
+		  		if(isset($_SESSION['COUNT_PRODUCT'])){
+		  			$count = count($_SESSION['COUNT_PRODUCT']);
+		  			if($count > 0) echo $count;
+		  			else echo '0';
+		  		} else{ echo '0'; }
 		  	?>)
 		  </div>
 		  <div class="card-body">
-		    <div class="alert alert-dismissible alert-danger">
-			  <a class="close" data-dismiss="alert">&times;</a>
-			  <strong>Trà đào</strong> - 15.000
-			</div>
+		<?php
+			if(isset($_SESSION['COUNT_PRODUCT'])){
+			  	foreach ($_SESSION['COUNT_PRODUCT'] as $key => $value) {
+			  		$items[] = $key;
+			  	}
+			  	$ids = implode(',', $items);
+			  	$total = 0;
+			  	$data = $conn->getDataByWhere('product', 'ID IN('.$ids.')', '*');
+			  	$data = json_decode(json_encode($data), true);
+				foreach ($data as $key => $value) {
+					$total = $_SESSION['COUNT_PRODUCT'][$value['ID']];
+		?>
+					<div class="alert alert-dismissible alert-danger">
+					  <a class="close" data-dismiss="alert">&times;</a>
+					  <strong>x<?php echo $total . ' ' . $value['NAME']; ?></strong> - <?php echo number_format($value['PRICE'],0,',',','); ?>
+					</div>
+		<?php
+				}
+			}
+		?>
 		  </div>
 		</div>
 	</div>

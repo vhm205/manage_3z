@@ -45,7 +45,7 @@
 <?php foreach ($data as $value): ?>
 		<div class="col-12 col-sm-6 col-md-6 col-lg-4">
 			<div class="card mb-3">
-			  <h3 class="card-header"><?php echo $value['NAME']; ?></h3>
+			  <h3 class="card-header"><span id="product-name-<?php echo $value['ID']; ?>" data-name="<?php echo $value['NAME']; ?>"><?php echo $value['NAME']; ?></span></h3>
 			  <img style="height: 200px; width: 100%; display: block;" src="<?php echo substr($value['IMAGE'], 1, strlen($value['IMAGE'])) ?>" alt="Card image">
 			  <div class="card-body">
 			  	<h5 class="card-title">
@@ -72,7 +72,6 @@
 			document.getElementById('product-'+<?php echo $value['ID'] ?>).addEventListener('click', function(e){
 				e.preventDefault();
 				const id = this.dataset.id,
-					  price = document.getElementById('price-'+<?php echo $value['ID'] ?>).dataset.price,
 					  status = document.getElementById('product-status-<?php echo $value['ID']; ?>');
 
 				if(!status.children[0].classList.contains('red')){
@@ -80,14 +79,17 @@
 						url: './ajax/ajax_add_product.php',
 						type: 'POST',
 						cache: false,
-						data: { 
-							id: id,
-							price: price
-						},
-						success(res){
-							// location.reload();
-							console.log(res);
-						}
+						data: { id: id }
+					}).done(function(res) {
+						location.reload();
+					}).fail(function() {
+						Swal.fire({
+						  position: 'center',
+						  type: 'error',
+						  title: 'Thêm sản phẩm thất bại',
+						  showConfirmButton: false,
+						  timer: 1500
+						})
 					})
 				} else{
 					Swal.fire({
