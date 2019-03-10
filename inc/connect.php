@@ -70,13 +70,7 @@
 			if(self::$conn !== NULL){
 				if($table === 'product'){
 					if(is_array($field)){ $field = implode(',', $field); }
-					if(is_array($where)){ 
-						$col = array_keys($where)[0];
-						$compareWith = $where[$col];
-						self::$sql = "SELECT {$field} FROM {$table} WHERE {$col} = {$compareWith}";
-					} else{
-						self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
-					}
+					self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
 					self::$pre = self::$conn -> prepare(self::$sql);
 					self::$pre->execute();
 					return self::$pre->fetch();
@@ -90,13 +84,7 @@
 				if($table === 'product'){
 					$datas = [];
 					if(is_array($field)){ $field = implode(',', $field); }
-					if(is_array($where)){ 
-						$col = array_keys($where)[0];
-						$compareWith = $where[$col];
-						self::$sql = "SELECT {$field} FROM {$table} WHERE {$col} = {$compareWith}";
-					} else{
-						self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
-					}
+					self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
 					self::$pre = self::$conn -> prepare(self::$sql);
 					self::$pre->execute();
 					while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {

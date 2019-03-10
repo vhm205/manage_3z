@@ -1,6 +1,6 @@
 <?php 
-	include './inc/header.php'; 
-	include './inc/nav.php';
+	include_once './inc/header.php'; 
+	include_once './inc/nav.php';
 ?>
 
 <script>
@@ -24,6 +24,6 @@
 	script.src = './assets/js/main.js';
 	document.body.appendChild(script);
 </script>
-<?php include './inc/footer.php'; ?>
+<?php include_once './inc/footer.php'; ?>
 
 	

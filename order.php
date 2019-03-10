@@ -1,8 +1,8 @@
 <?php 
-	include './inc/header.php';
-	include './config/config.php';
-	include './inc/connect.php';
-	include './inc/nav.php';
+	include_once './inc/header.php';
+	include_once './config/config.php';
+	include_once './inc/connect.php';
+	include_once './inc/nav.php';
 ?>
 <script>
 	const createLink = (rel, href) => {
@@ -27,10 +27,14 @@
 		$data = $conn->getDataByWhere('product', $where, '*');
 	}
 
-	if(isset($_SESSION['MENU'])){
-		echo '<pre>';
-		var_dump($_SESSION['MENU']);
-		echo '</pre>';
+	if(isset($_POST['sm-save'])){
+		$_SESSION['DETAIL_PRODUCT'] = $_SESSION['TEMP_DATA'];
+		header('location: ./manage.php');
+	}
+
+	if(isset($_POST['sm-cancel'])){
+		if(isset($_SESSION['TEMP_DATA'])) unset($_SESSION['TEMP_DATA']);
+		header('location: ./manage.php');
 	}
 ?>
 
@@ -109,6 +113,12 @@
 					</select>
 				</div>
 		     </p>
+		     <p>
+				<form method="POST">
+					<button type="submit" name="sm-save" class="btn btn-block btn-primary btn-save" <?php if(!isset($_SESSION['COUNT_PRODUCT']) || count($_SESSION['COUNT_PRODUCT']) <= 0) echo 'disabled' ?> >Save changes</button>
+					<button type="submit" name="sm-cancel" class="btn btn-block btn-outline-danger btn-cancel">Cancel</button>
+				</form>
+		     </p>
 		</div>
 	</div>
 </div>
@@ -127,27 +137,35 @@
 		  			if($count > 0) echo $count;
 		  			else echo '0';
 		  		} else{ echo '0'; }
-		  	?>)
+		  	?>) <a style="font-size: 15px;" href="./ajax/ajax_remove_cart_product.php?id=0">Clear All</a>
 		  </div>
 		  <div class="card-body">
 		<?php
-			if(isset($_SESSION['COUNT_PRODUCT'])){
+			if(isset($_SESSION['COUNT_PRODUCT']) && count($_SESSION['COUNT_PRODUCT']) > 0){
 			  	foreach ($_SESSION['COUNT_PRODUCT'] as $key => $value) {
 			  		$items[] = $key;
 			  	}
 			  	$ids = implode(',', $items);
+			  	$datas = [];
 			  	$total = 0;
 			  	$data = $conn->getDataByWhere('product', 'ID IN('.$ids.')', '*');
 			  	$data = json_decode(json_encode($data), true);
+			  	if(isset($_SESSION['MENU'])) $datas[0] = $_SESSION['MENU'];
 				foreach ($data as $key => $value) {
 					$total = $_SESSION['COUNT_PRODUCT'][$value['ID']];
+					array_push($value, $total);
+					array_push($datas, $value);
 		?>
 					<div class="alert alert-dismissible alert-danger">
-					  <a class="close" data-dismiss="alert">&times;</a>
+					  <a class="close" href="./ajax/ajax_remove_cart_product.php?id=<?php echo $value['ID']; ?>" >&times;</a>
+					  <!-- data-dismiss="alert" -->
 					  <strong>x<?php echo $total . ' ' . $value['NAME']; ?></strong> - <?php echo number_format($value['PRICE'],0,',',','); ?>
 					</div>
 		<?php
 				}
+				$_SESSION['TEMP_DATA'] = $datas;
+			} else{
+				unset($_SESSION['TEMP_DATA']);
 			}
 		?>
 		  </div>
@@ -200,11 +218,9 @@
 					product.innerHTML = res;
 				}
 			})
-		}
+		}	
 
-		btn_cart.addEventListener('click', function(){
-			cart.classList.toggle('active');
-		})
+
 
 		sm_price.addEventListener('click', function(){
 			const min_price = document.getElementById('min-price').value,
@@ -239,6 +255,10 @@
 					product.innerHTML = res;
 				}
 			})
+		})
+
+		btn_cart.addEventListener('click', function(){
+			cart.classList.toggle('active');
 		})
 
 		price_up.addEventListener('input', function(){
@@ -313,4 +333,4 @@
 		});
 	});
 </script>
-<?php include './inc/footer.php'; ?>
+<?php include_once './inc/footer.php'; ?>

@@ -1,6 +1,6 @@
 <?php
-	include '../config/config.php';
-	include '../inc/connect.php';
+	include_once '../config/config.php';
+	include_once '../inc/connect.php';
 
 	$conn = new Connection();
 	
@@ -45,7 +45,9 @@
 <?php foreach ($data as $value): ?>
 		<div class="col-12 col-sm-6 col-md-6 col-lg-4">
 			<div class="card mb-3">
-			  <h3 class="card-header"><span id="product-name-<?php echo $value['ID']; ?>" data-name="<?php echo $value['NAME']; ?>"><?php echo $value['NAME']; ?></span></h3>
+			  <h3 class="card-header">
+			  	<span id="product-name-<?php echo $value['ID']; ?>" data-name="<?php echo $value['NAME']; ?>"><?php echo $value['NAME']; ?></span>
+			  </h3>
 			  <img style="height: 200px; width: 100%; display: block;" src="<?php echo substr($value['IMAGE'], 1, strlen($value['IMAGE'])) ?>" alt="Card image">
 			  <div class="card-body">
 			  	<h5 class="card-title">

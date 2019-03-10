@@ -1,6 +1,6 @@
 <?php 
-	include '../config/config.php';
-	include '../inc/connect.php';
+	include_once '../config/config.php';
+	include_once '../inc/connect.php';
 
 	$conn = new Connection();
 	

@@ -6,9 +6,9 @@
 
   <div class="collapse navbar-collapse" id="navbarColor02">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="<?php echo $_SESSION['BASE_URL']; ?>order.php">Order</a>
-      </li>
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="<?php //echo $_SESSION['BASE_URL']; ?>order.php">Order</a>
+      </li> -->
       <li class="nav-item">
         <a class="nav-link" href="<?php echo $_SESSION['BASE_URL']; ?>manage.php">Quản lý</a>
       </li>

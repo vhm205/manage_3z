@@ -1,8 +1,8 @@
 <?php 
-	include '../inc/header.php';
-	include '../config/config.php';
-	include '../inc/connect.php';
-	include '../inc/nav.php';
+	include_once '../inc/header.php';
+	include_once '../config/config.php';
+	include_once '../inc/connect.php';
+	include_once '../inc/nav.php';
 	
 
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -151,4 +151,4 @@
 <?php } ?>
 
 
-<?php include '../inc/footer.php'; ?>
+<?php include_once '../inc/footer.php'; ?>
