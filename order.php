@@ -29,6 +29,7 @@
 
 	if(isset($_POST['sm-save'])){
 		$_SESSION['DETAIL_PRODUCT'] = $_SESSION['TEMP_DATA'];
+		unset($_SESSION['TEMP_DATA']);
 		header('location: ./manage.php');
 	}
 
@@ -142,9 +143,8 @@
 		  <div class="card-body">
 		<?php
 			if(isset($_SESSION['COUNT_PRODUCT']) && count($_SESSION['COUNT_PRODUCT']) > 0){
-			  	foreach ($_SESSION['COUNT_PRODUCT'] as $key => $value) {
+			  	foreach ($_SESSION['COUNT_PRODUCT'] as $key => $value)
 			  		$items[] = $key;
-			  	}
 			  	$ids = implode(',', $items);
 			  	$datas = [];
 			  	$total = 0;

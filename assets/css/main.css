@@ -98,3 +98,21 @@ html, body{
    margin-top: 5px;
    position: relative;
 }
+.detail-menu{
+   height: 500px;
+   overflow: auto
+}
+.img-thumbnail{
+   width: 60px;
+   height: 60px;
+   object-fit: contain
+}
+.hidden{
+   display: none;
+}
+.amount_input{
+   width: 100px;
+}
+.fa-trash{
+   font-size: 15px;
+}

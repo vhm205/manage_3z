@@ -83,7 +83,7 @@
 						cache: false,
 						data: { id: id }
 					}).done(function(res) {
-						location.reload();
+						window.location.reload();
 					}).fail(function() {
 						Swal.fire({
 						  position: 'center',

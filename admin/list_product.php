@@ -122,4 +122,6 @@
 	})
 </script>
 
+
+<?php Connection::disconnect(); ?>
 <?php include_once '../inc/footer.php'; ?>

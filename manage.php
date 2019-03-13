@@ -29,6 +29,15 @@
 		header('location: ./order.php');
 	}
 
+	if(isset($_SESSION['ALL_MENU'])){
+		$items = [];
+		$all_datas = json_decode(json_encode($_SESSION['ALL_MENU']), true);
+		foreach ($all_datas as $key => $value) {
+			$items[] = $value[0]['TABLE'];
+		}
+		$_SESSION['SPLIT_TABLE'] = $items;
+	}
+
 	if(isset($_SESSION['DETAIL_PRODUCT'])){
 		$people = $_SESSION['MENU']['PEOPLE'];
 		$table  = $_SESSION['MENU']['TABLE'];
@@ -37,7 +46,7 @@
 		if(!isset($_SESSION['ARR_MENU'])){
 			$_SESSION['ARR_MENU']['PEOPLE'] = ($people . $char);
 			$_SESSION['ARR_MENU']['TABLE'] = ($table . $char);
-			$_SESSION['SPLIT_TABLE'] = explode(',', ($table . $char));
+			$_SESSION['SPLIT_TABLE'] = explode(',', $table);
 		} elseif(isset($_SESSION['ARR_MENU'])){
 			$split_table = explode(',', $_SESSION['ARR_MENU']['TABLE']);
 			$exist = null;
@@ -50,23 +59,26 @@
 				$_SESSION['ARR_MENU']['PEOPLE'] .= ($people . $char);
 				$_SESSION['ARR_MENU']['TABLE'] .= ($table . $char);
 			}
-			$_SESSION['SPLIT_TABLE'] = explode(',', $_SESSION['ARR_MENU']['TABLE']);
 		}
 
 		if(isset($_SESSION['ALL_MENU'])){
+			$items = [];
 			$all_datas = json_decode(json_encode($_SESSION['ALL_MENU']), true);
 			array_push($all_datas, $_SESSION['DETAIL_PRODUCT']);
-			$_SESSION['ALL_MENU'] = $all_datas;
+			foreach ($all_datas as $key => $value) {
+				$items[] = $value[0]['TABLE'];
+			}
+			$_SESSION['SPLIT_TABLE'] = $items;
 		} else{
 			$all_datas = [];
 			array_push($all_datas, $_SESSION['DETAIL_PRODUCT']);
-			$_SESSION['ALL_MENU'] = $all_datas;
 		}
-		
-		// echo '<pre>';
-		// var_dump($all_datas);
-		// echo '</pre>';
+
+
+		$_SESSION['ALL_MENU'] = $all_datas;
+		unset($_SESSION['DETAIL_PRODUCT']);
 	}
+
 ?>
 
 
@@ -101,7 +113,7 @@
 					        <option value="4">4</option>
 					      </select>
 					    </div>
-					    <input type="hidden" id="session_input" name="session_input" value="<?php if(isset($_SESSION['SPLIT_TABLE'])) echo implode(',',$_SESSION['SPLIT_TABLE']); ?>">
+					    <input type="hidden" id="session_input" name="session_input" value="<?php if(isset($_SESSION['SPLIT_TABLE'])) echo implode(',',$_SESSION['SPLIT_TABLE']) . ','; ?>">
 				    </p>
 				    <p>
 				    	<div class="btn-group btn-group-toggle add-table"></div>
@@ -113,19 +125,21 @@
 				</form>
 			  </div>
 			  <div class="tab-pane fade" id="menu">
+			  	<div class="detail-menu">
 			<?php if(isset($_SESSION['ALL_MENU'])){ 
 					$all_datas = $_SESSION['ALL_MENU'];
-					$count = count($all_datas);
-					for ($i = 0; $i < $count; $i++) { 
+					foreach ($all_datas as $key => $value) {
 			?>
  				<p>
 			    	<div class="alert alert-dismissible alert-info">
-					  <button type="button" class="close" data-dismiss="alert">&times;</button>
-					  <strong>Menu bàn số <?php echo $all_datas[$i][0]['TABLE']; ?></strong> - <a href="#" class="alert-link">Chi tiết</a>
+					  <a href="./remove_menu.php?index=<?php echo $key; ?>" onclick="return confirm('Do you want to delete?')" class="btn btn-danger btn-sm float-right">Xóa</a>
+					  <a href="./detail_menu.php?index=<?php echo $key; ?>" class="btn btn-primary btn-sm float-right">Chi tiết</a>
+					  <strong>Thực đơn <?php echo $value[0]['TABLE']; ?></strong>
 					</div>
 			    </p>
 				<?php } ?>
 			<?php } ?>
+				</div>
 			  </div>
 			</div>
 		</div>
