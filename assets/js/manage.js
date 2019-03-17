@@ -21,7 +21,7 @@ $(document).ready(function(){
 		  add_table = document.getElementsByClassName('add-table')[0];
 
 
-	// Vẽ sơ đồ quán lớn
+	// Vẽ sơ đồ quán (lớn)
 	for (let i = 1; i <= num_btn; i++) {
 		const val 	= `Bàn ${i}`;
 			  label = document.createElement('label'),
@@ -40,7 +40,7 @@ $(document).ready(function(){
 		wrapper.appendChild(label);
 	}
 
-	// Vẽ sơ đồ quán nhỏ
+	// Vẽ sơ đồ quán (nhỏ)
 	for (let j = 1; j <= num_btn; j++) {
 		const val 	 = `Bàn ${j}`,
 			  common = 'ck-' + j,

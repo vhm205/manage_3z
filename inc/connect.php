@@ -95,16 +95,24 @@
 			} else{ return 0; }
 		}
 
-		public function getDataLimit($table, $page = 0, $limit = 6)
+		public function getDataLimit($table, $page = 0, $where = '', $limit = 6)
 		{
 			if(self::$conn !== NULL){
 				if($table === 'product'){
 					$from = ($limit * $page) - $limit;
 					$datas = [];
 					if($page == 0){
-						self::$sql = "SELECT * FROM {$table} LIMIT {$page}, {$limit}";
+						if($where !== ''){
+							self::$sql = "SELECT * FROM {$table} WHERE {$where} LIMIT {$page}, {$limit}";
+						} else{
+							self::$sql = "SELECT * FROM {$table} LIMIT {$page}, {$limit}";
+						}
 					} else{
-						self::$sql = "SELECT * FROM {$table} LIMIT {$from}, {$limit}";
+						if($where !== ''){
+							self::$sql = "SELECT * FROM {$table} WHERE {$where} LIMIT {$from}, {$limit}";
+						} else{
+							self::$sql = "SELECT * FROM {$table} LIMIT {$from}, {$limit}";
+						}
 					}
 					self::$pre = self::$conn -> prepare(self::$sql);
 					self::$pre->execute();
@@ -133,6 +141,11 @@
 			if(self::$conn !== NULL){
 				if($table === 'product'){
 					self::$sql = "INSERT INTO {$table}(NAME, PRICE, IMAGE, DESCRIPTION, TYPE, STATUS) VALUES(?,?,?,?,?,?)";
+					self::$pre = self::$conn -> prepare(self::$sql);
+					return self::$pre->execute($data);
+				}
+				if($table === 'reports_revenue'){
+					self::$sql = "INSERT INTO {$table}(MONTH, TOTAL_MONEY, TOTAL_AMOUNT, DATE_CREATE, DETAIL) VALUES(?,?,?,?,?)";
 					self::$pre = self::$conn -> prepare(self::$sql);
 					return self::$pre->execute($data);
 				}

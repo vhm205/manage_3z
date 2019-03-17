@@ -1,4 +1,5 @@
 <?php 
+	error_reporting(E_ALL ^ E_NOTICE);
 	include_once '../inc/header.php';
 	include_once '../config/config.php';
 	include_once '../inc/connect.php';
@@ -96,7 +97,7 @@
 				        <label class="col-form-label" for="type">Loại sản phẩm</label>
 				      	<select class="form-control col-4" id="type" name="type">
 					        <option value="Đồ uống" selected>Đồ uống</option>
-					        <option value="Thức ăn">Thức ăn</option>
+					        <option value="Món ăn">Món ăn</option>
 				      	</select>
 				    </div>
 					<div class="form-group">

@@ -20,13 +20,6 @@
 	$countData = $conn->countData('product', 'ID');
 	$count = ceil($countData / Connection::$limit); 
 
-	if(isset($_POST['sm-search'])){
-		$key_words = trim($_POST['search']);
-
-		$where = "NAME LIKE '%{$key_words}%' OR DESCRIPTION LIKE '%{$key_words}%'";
-		$data = $conn->getDataByWhere('product', $where, '*');
-	}
-
 	if(isset($_POST['sm-save'])){
 		$_SESSION['DETAIL_PRODUCT'] = $_SESSION['TEMP_DATA'];
 		unset($_SESSION['TEMP_DATA']);
@@ -68,10 +61,10 @@
 			</div>
 		</div>
 		<div class="col-12 col-sm-12 col-md-4 col-lg-4 mt-5">
-			<form method="POST" action="#" class="form-inline my-2 my-lg-0">
-		      <input class="form-control search mr-sm-2" type="search" name="search" placeholder="Tìm kiếm...">
-		      <button class="btn btn-primary my-2 my-sm-0" name="sm-search" type="submit">Search</button>
-		    </form>
+			<div class="form-inline my-2 my-lg-0">
+		     <input class="form-control search mr-sm-2" type="search" id="search-order" placeholder="Tìm kiếm...">
+		     <button class="btn btn-primary my-2 my-sm-0" id="sm-search" type="button">Search</button>
+		    </div>
 		     <p>
 		     	<div class="form-group">
 		     		<label class="col-form-label" for="name">Sắp xếp theo giá</label>
@@ -109,7 +102,7 @@
 		     	<div class="form-group">
 		     		<label class="col-form-label" for="select-type">Sắp xếp theo loại</label>
 		     		<select class="form-control col-6" name="type" id="select-type">
-					    <option selected value="Thức ăn">Thức ăn</option>
+					    <option selected value="Món ăn">Món ăn</option>
 					    <option value="Đồ uống">Đồ uống</option>
 					</select>
 				</div>
@@ -158,7 +151,6 @@
 		?>
 					<div class="alert alert-dismissible alert-danger">
 					  <a class="close" href="./ajax/ajax_remove_cart_product.php?id=<?php echo $value['ID']; ?>" >&times;</a>
-					  <!-- data-dismiss="alert" -->
 					  <strong>x<?php echo $total . ' ' . $value['NAME']; ?></strong> - <?php echo number_format($value['PRICE'],0,',',','); ?>
 					</div>
 		<?php
@@ -174,109 +166,10 @@
 </div>
 
 <script src="./assets/js/sweetalert2.min.js"></script>
+<script src="./assets/js/order.js"></script>
 <script>
 	$(document).ready(function(){
 		'use stricts';
-		const al_require = document.getElementsByClassName('alert-require')[0],
-			  product = document.getElementsByClassName('product')[0],
-			  num = document.getElementsByClassName('price'),
-			  price_up = document.getElementById('price-up'),
-			  remain = document.getElementById('remain'),
-			  sm_price = document.getElementById('sm-price'),
-			  outOfStock = document.getElementById('out-of-stock'),
-			  price_down = document.getElementById('price-down'),
-			  select_type = document.getElementById('select-type'),
-			  mess_require = document.getElementById('message-require'),
-			  btn_cart = document.getElementById('btn-cart'),
-			  cart = document.getElementsByClassName('contain-cart-product')[0];
-
-		// num[0].addEventListener('input', function(){
-		// 	this.value = accounting.formatMoney(this.value, "", 0);
-		// })
-		// num[1].addEventListener('input', function(){
-		// 	this.value = accounting.formatMoney(this.value, "", 0);
-		// })
-
-		const show_alert = function(el, mess = ''){
-			el.classList.contains('fadeOutDown') && el.classList.remove('fadeOutDown');
-			al_require.children[1].innerHTML = mess;
-			el.style.display = 'block';
-			el.classList.add('fadeInUp');
-			setTimeout(()=>{
-				el.classList.remove('fadeInUp');
-				el.classList.add('fadeOutDown');
-				setTimeout(()=>{
-					el.style.display = 'none';
-				}, 2000)
-			}, 3000)
-		}
-
-		const ajax = function(src){
-			$.ajax({
-				url: src,
-				success(res){
-					product.innerHTML = res;
-				}
-			})
-		}	
-
-
-
-		sm_price.addEventListener('click', function(){
-			const min_price = document.getElementById('min-price').value,
-			      max_price = document.getElementById('max-price').value;
-
-			if(min_price === '' || max_price === ''){
-				show_alert(al_require, 'Bạn cần nhập đầy đủ Min và Max');
-				return;
-			}
-			if(min_price >= max_price){
-				show_alert(al_require, 'Min phải bé hơn Max');
-				return;
-			}
-
-			$.ajax({
-				url: './ajax/ajax_price_custom.php',
-				data: {
-					min: min_price,
-					max: max_price
-				},
-				success(res){
-					product.innerHTML = res;
-				}
-			})
-		})
-
-		select_type.addEventListener('input', function(){
-			$.ajax({
-				url: './ajax/ajax_product_type.php',
-				data: {type: this.value},
-				success(res){
-					product.innerHTML = res;
-				}
-			})
-		})
-
-		btn_cart.addEventListener('click', function(){
-			cart.classList.toggle('active');
-		})
-
-		price_up.addEventListener('input', function(){
-			this.checked && ajax('./ajax/ajax_price_up.php');
-		});
-
-		price_down.addEventListener('input', function(){
-			this.checked && ajax('./ajax/ajax_price_down.php');
-		})
-
-		remain.addEventListener('input', function(){
-			this.checked && ajax('./ajax/ajax_remaining_product.php');
-		})
-
-		outOfStock.addEventListener('input', function(){
-			this.checked && ajax('./ajax/ajax_out_of_stock.php');
-		})
-
 
 		document.cookie = `page=`;
 
@@ -291,7 +184,6 @@
 			}
 		});
 
-		// Pagination
 		const li = 'ul.pagination li.page-item:not(.pre):not(.next)';
 		$(li + ':nth-child(2) .button-link').addClass('active');
 

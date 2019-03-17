@@ -54,7 +54,12 @@
 
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-8 col-sm-8 col-md-8 col-lg-8">
+		<div class="col-10 col-sm-10 col-md-10 col-lg-10">
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><a href="./">Trang chủ</a></li>
+			  <li class="breadcrumb-item"><a href="./manage.php">Quản lý</a></li>
+			  <li class="breadcrumb-item active">Chi tiết menu</li>
+			</ol>
 			<form method="POST" action="#">
 				<table class="table table-hover">
 				  <thead class="bg-dark text-light">
@@ -92,12 +97,15 @@
 				      	<a href="./ajax/ajax_delete_product.php?id=<?php echo $key ?>&index=<?php echo $index; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa không?')" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
 				      </td>
 				    </tr>
-				    <?php 
+				    <?php
 				    	$total_amount += $value[0];
-				    	$total_money += $value[0] * $value['PRICE'];
+				    	$total_money += ($value[0] * (int)$value['PRICE']);
 				    }
 				    ?>
 				<?php endforeach ?>
+					<input type="hidden" name="index" id="index" value="<?php if(isset($index)) echo $index; ?>">
+					<input type="hidden" name="total_money" id="total_money" value="<?php if(isset($total_money)) echo $total_money; ?>">
+					<input type="hidden" name="total_amount" id="total_amount" value="<?php if(isset($total_amount)) echo $total_amount; ?>">
 					<tr class="bg-primary text-light">
 						<th colspan="6" scope="col" class="text-right">SỐ LƯỢNG: <?php if(isset($total_amount)) echo $total_amount; ?></th>
 						<th colspan="1" scope="col" class="text-center">TỔNG TIỀN: <?php if(isset($total_money)) echo number_format($total_money,0,',',','); ?></th>
@@ -108,7 +116,7 @@
 							<button type="submit" name="sm-update" class="btn btn-block btn-outline-danger">Cập nhật</button>
 						</td>
 						<td colspan="4">
-							<button type="button" name="sm-pay" class="btn btn-block btn-outline-warning btn-pay">Thanh toán</button>
+							<button type="button" class="btn btn-block btn-outline-warning btn-pay">Thanh toán</button>
 						</td>
 					</tr>
 				  </tbody>
@@ -117,8 +125,13 @@
 		</div>
 	</div>
 </div>
-
-
+<div class="load-ajax">
+	<div class="orbit-spinner">
+	  <div class="orbit"></div>
+	  <div class="orbit"></div>
+	  <div class="orbit"></div>
+	</div>
+</div>
 <script src="./assets/js/sweetalert2.min.js"></script>
 <script>
 	$(document).ready(function(){
@@ -145,7 +158,18 @@
 			})
 		}
 
-		btn_pay.addEventListener('click', function(){
+		$(document).ajaxStart(function() {
+			$('.load-ajax').css('display', 'block');
+		});
+		$(document).ajaxComplete(function() {
+			$('.load-ajax').css('display', 'none');
+		});
+
+		$('.btn-pay').on('click', function(e){
+			e.preventDefault();
+			const index 	   = $('#index').val(),
+				  total_money  = $('#total_money').val(),
+				  total_amount = $('#total_amount').val();
 			Swal.fire({
 			  title: 'Hoàn tất thanh toán?',
 			  type: 'info',
@@ -154,16 +178,38 @@
 			  cancelButtonColor: '#d33',
 			  confirmButtonText: 'Yes'
 			}).then((result) => {
-			  if (result.value) {
-			    Swal.fire({
-			      title: 'Thanh toán thành công!',
-			      type: 'success',
-			      showConfirmButton: false,
-			      timer: 1500
-			    })
-			    setTimeout(() => window.location.href = './manage.php', 2000);
-			  }
-			})
+			  	if (result.value) {
+				  	$.ajax({
+				  		url: './pay_menu.php',
+				  		type: 'POST',
+				  		cache: false,
+				  		data: {
+				  			index : index,
+				  			total_money : total_money,
+				  			total_amount : total_amount
+				  		}
+				  	})
+				  	.done(function(res) {
+				  		Swal.fire({
+					      title: 'Thanh toán thành công',
+					      type: 'success',
+					      showConfirmButton: false,
+					      timer: 1500
+					    })
+					    setTimeout(() => window.location.href = './manage.php', 2000)
+				  	})
+				  	.fail(function() {
+				  		Swal.fire({
+					      title: 'Thanh toán thất bại',
+					      type: 'error',
+					      showConfirmButton: false,
+					      timer: 1500
+					    })
+				  	})
+				} 
+			});
+
+			return false;
 		})
 	})
 </script>

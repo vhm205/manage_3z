@@ -3,16 +3,42 @@
 	include_once '../inc/connect.php';
 
 	$conn = new Connection();
-	
-	if(isset($_GET['page']) && filter_var($_GET['page'], FILTER_VALIDATE_INT, array('min_range'  => 1))){
-		$page = $_GET['page'];
-		$result = $conn -> getDataLimit('product', $page);
-		$data = json_decode(json_encode($result), true);
+
+	if(isset($_REQUEST['page'])){
+		$page = $_REQUEST['page'];
+
+		if(isset($_REQUEST['where'])){
+			if(isset($_REQUEST['word'])){
+				$words = $_REQUEST['word'];
+				$where = "NAME LIKE '%{$words}%' OR DESCRIPTION LIKE '%{$words}%'";
+			}
+			if(isset($_REQUEST['min']) && isset($_REQUEST['max'])){
+				$min = $_REQUEST['min'];
+				$max = $_REQUEST['max'];
+				$where = "PRICE >= {$min} AND PRICE <= {$max}";
+			}
+			if(isset($_REQUEST['price'])){
+				$price = $_REQUEST['price'];
+				$where = ($price === 'up') ? "0 = 0 ORDER BY PRICE ASC" : "0 = 0 ORDER BY PRICE DESC";
+			}
+			if(isset($_REQUEST['status'])){
+				$status = $_REQUEST['status'];
+				$where = ($status === 'remain') ? "STATUS = 1" : "STATUS = 0";
+			}
+			if(isset($_REQUEST['select_by_type'])){
+				$select_by_type = $_REQUEST['select_by_type'];
+				$where = ($select_by_type === 'Món ăn') ? "TYPE = 'Món ăn'" : "TYPE = 'Đồ uống'";
+			}
+			$result = $conn -> getDataLimit('product', 0, $where);
+		} else{
+			$result = $conn -> getDataLimit('product', $page);
+		}
 	} else{
 		$result = $conn -> getDataLimit('product');
-		$data = json_decode(json_encode($result), true);
 	}
+	$data = json_decode(json_encode($result), true);
 ?>
+
 
 <?php if(isset($_GET['type']) && $_GET['type'] === 'product_admin') { ?>
 <?php foreach ($data as $value): ?>
@@ -75,11 +101,9 @@
 				e.preventDefault();
 				const id = this.dataset.id,
 					  status = document.getElementById('product-status-<?php echo $value['ID']; ?>');
-
 				if(!status.children[0].classList.contains('red')){
 					$.ajax({
 						url: './ajax/ajax_add_product.php',
-						type: 'POST',
 						cache: false,
 						data: { id: id }
 					}).done(function(res) {
