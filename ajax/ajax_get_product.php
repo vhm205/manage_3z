@@ -6,6 +6,7 @@
 
 	if(isset($_REQUEST['page'])){
 		$page = $_REQUEST['page'];
+		$where = '';
 
 		if(isset($_REQUEST['where'])){
 			if(isset($_REQUEST['word'])){
@@ -30,12 +31,17 @@
 				$where = ($select_by_type === 'Món ăn') ? "TYPE = 'Món ăn'" : "TYPE = 'Đồ uống'";
 			}
 			$result = $conn -> getDataLimit('product', 0, $where);
+			$countData = $conn -> getDataByWhere('product', $where, 'ID');
+			$countData = count($countData);
 		} else{
-			$result = $conn -> getDataLimit('product', $page);
+			$result = $conn->getDataLimit('product', $page);
+			$countData = $conn->countData('product', 'ID');
 		}
 	} else{
 		$result = $conn -> getDataLimit('product');
 	}
+	
+	$count = ceil($countData / Connection::$limit);
 	$data = json_decode(json_encode($result), true);
 ?>
 
@@ -67,66 +73,71 @@
 	</tr>
 <?php endforeach ?>
 <?php } ?>
+
+<!-- ------------------------------------------------------------------------- -->
+
 <?php if(isset($_GET['type']) && $_GET['type'] === 'product_main') { ?>
+<span id="count-pagi" data-count-pagi="<?php echo $count; ?>"></span>
 <?php foreach ($data as $value): ?>
-		<div class="col-12 col-sm-6 col-md-6 col-lg-4">
-			<div class="card mb-3">
-			  <h3 class="card-header">
-			  	<span id="product-name-<?php echo $value['ID']; ?>" data-name="<?php echo $value['NAME']; ?>"><?php echo $value['NAME']; ?></span>
-			  </h3>
-			  <img style="height: 200px; width: 100%; display: block;" src="<?php echo substr($value['IMAGE'], 1, strlen($value['IMAGE'])) ?>" alt="Card image">
-			  <div class="card-body">
-			  	<h5 class="card-title">
-			  		<span id="price-<?php echo $value['ID']; ?>" data-price="<?php echo number_format($value['PRICE'], 0, ',',','); ?>">
-			  			<?php echo number_format($value['PRICE'], 0, ',',','); ?>
-			  		</span>
-			  	</h5>
-			    <p class="card-text"><?php echo $value['DESCRIPTION']; ?></p>
-			    <a href="#" id="product-<?php echo $value['ID']; ?>" data-id="<?php echo $value['ID']; ?>" class="btn btn-warning btn-block card-link">Thêm món</a>
-			  </div>
-			  <div class="card-footer text-muted" id="product-status-<?php echo $value['ID']; ?>">
-			    <?php 
-			    	if($value['STATUS']){
-			    		echo "<label class='circle green'></label> Trạng thái: Còn hàng";
-			    	}
-			    	else {
-			    		echo "<label class='circle red'></label> Trạng thái: hết hàng";
-			    	}
-			    ?>
-			  </div>
-			</div>
+	<div class="col-12 col-sm-6 col-md-6 col-lg-4">
+		<div class="card mb-3">
+		  <h3 class="card-header">
+		  	<span id="product-name-<?php echo $value['ID']; ?>" data-name="<?php echo $value['NAME']; ?>"><?php echo $value['NAME']; ?></span>
+		  </h3>
+		  <img style="height: 200px; width: 100%; display: block;" src="<?php echo substr($value['IMAGE'], 1, strlen($value['IMAGE'])) ?>" alt="Card image">
+		  <div class="card-body">
+		  	<h5 class="card-title">
+		  		<span id="price-<?php echo $value['ID']; ?>" data-price="<?php echo number_format($value['PRICE'], 0, ',',','); ?>">
+		  			<?php echo number_format($value['PRICE'], 0, ',',','); ?>
+		  		</span>
+		  	</h5>
+		    <p class="card-text"><?php echo $value['DESCRIPTION']; ?></p>
+		    <a href="#" id="product-<?php echo $value['ID']; ?>" data-id="<?php echo $value['ID']; ?>" class="btn btn-warning btn-block card-link">Thêm món</a>
+		  </div>
+		  <div class="card-footer text-muted" id="product-status-<?php echo $value['ID']; ?>">
+		    <?php 
+		    	if($value['STATUS']){
+		    		echo "<label class='circle green'></label> Trạng thái: Còn hàng";
+		    	}
+		    	else {
+		    		echo "<label class='circle red'></label> Trạng thái: hết hàng";
+		    	}
+		    ?>
+		  </div>
 		</div>
-		<script>
-			document.getElementById('product-'+<?php echo $value['ID'] ?>).addEventListener('click', function(e){
-				e.preventDefault();
-				const id = this.dataset.id,
-					  status = document.getElementById('product-status-<?php echo $value['ID']; ?>');
-				if(!status.children[0].classList.contains('red')){
-					$.ajax({
-						url: './ajax/ajax_add_product.php',
-						cache: false,
-						data: { id: id }
-					}).done(function(res) {
-						window.location.reload();
-					}).fail(function() {
-						Swal.fire({
-						  position: 'center',
-						  type: 'error',
-						  title: 'Thêm sản phẩm thất bại',
-						  showConfirmButton: false,
-						  timer: 1500
-						})
-					})
-				} else{
+	</div>
+	<script>
+		document.getElementById('product-'+<?php echo $value['ID'] ?>).addEventListener('click', function(e){
+			e.preventDefault();
+			const id = this.dataset.id,
+				  status = document.getElementById('product-status-<?php echo $value['ID']; ?>');
+			if(!status.children[0].classList.contains('red')){
+				$.ajax({
+					url: './ajax/ajax_add_product.php',
+					cache: false,
+					data: { id: id }
+				}).done(function(res) {
+					window.location.reload();
+				}).fail(function(err) {
 					Swal.fire({
 					  position: 'center',
-					  type: 'warning',
-					  title: 'Hết hàng',
+					  text: err,
+					  type: 'error',
+					  title: 'Thêm sản phẩm thất bại',
 					  showConfirmButton: false,
-					  timer: 1500
+					  timer: 2000
 					})
-				}
-			})
-		</script>
+				})
+			} else{
+				Swal.fire({
+				  position: 'center',
+				  type: 'warning',
+				  title: 'Hết hàng',
+				  showConfirmButton: false,
+				  timer: 1500
+				})
+			}
+		})
+	</script>
 <?php endforeach ?>
 <?php } ?>

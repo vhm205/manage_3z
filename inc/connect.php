@@ -14,6 +14,7 @@
 	
 	/**
 	 *  Connect to MYSQL (DB: QL_NHAHANG)
+	 *  Author: VHM
 	 */
 	class Connection implements QL
 	{
@@ -95,9 +96,10 @@
 			} else{ return 0; }
 		}
 
-		public function getDataLimit($table, $page = 0, $where = '', $limit = 6)
+		public function getDataLimit($table, $page = 0, $where = '')
 		{
 			if(self::$conn !== NULL){
+				$limit = self::$limit;
 				if($table === 'product'){
 					$from = ($limit * $page) - $limit;
 					$datas = [];

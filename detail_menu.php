@@ -198,12 +198,13 @@
 					    })
 					    setTimeout(() => window.location.href = './manage.php', 2000)
 				  	})
-				  	.fail(function() {
+				  	.fail(function(err) {
 				  		Swal.fire({
 					      title: 'Thanh toán thất bại',
+					      text: err,
 					      type: 'error',
 					      showConfirmButton: false,
-					      timer: 1500
+					      timer: 2000
 					    })
 				  	})
 				} 

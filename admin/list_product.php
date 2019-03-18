@@ -78,17 +78,17 @@
 	
 		// Set active pagi khi mới load
 		var li = 'ul.pagination li.page-item:not(.pre):not(.next)';
-		$(li + ':nth-child(2) .button-link').addClass('active');
+		$(`${li}:nth-child(2) .button-link`).addClass('active');
 
 		$('.page-link').click(function(){
 			var page = parseInt($(this).attr('title')),
-				linkLen = $(li + ' .button-link').length,
+				linkLen = $(`${li} .button-link`).length,
 				activeLi = page;
 
 
 			// Xóa và thêm Class active của Pagi
-			for (var i = 0; i < linkLen; i++) $(li + ' .button-link').removeClass('active');
-			$(li + ':nth-child(' + (++activeLi) + ') .button-link').addClass('active');
+			for (var i = 0; i < linkLen; i++) $(`${li} .button-link`).removeClass('active');
+			$(`${li}:nth-child(${++activeLi}) .button-link`).addClass('active');
 
 			// Set Cookie trang hiện tại
 			document.cookie = `page=${page}`;

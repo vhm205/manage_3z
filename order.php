@@ -18,8 +18,8 @@
 <?php 
 	$conn = new Connection();
 	$countData = $conn->countData('product', 'ID');
-	$count = ceil($countData / Connection::$limit); 
-
+	$count = ceil($countData / Connection::$limit);
+	
 	if(isset($_POST['sm-save'])){
 		$_SESSION['DETAIL_PRODUCT'] = $_SESSION['TEMP_DATA'];
 		unset($_SESSION['TEMP_DATA']);
@@ -42,21 +42,19 @@
 			<div class="container">
 				<div class="row product" id="data"></div>
 				<div class="row">
-					<div>
-					  <ul class="pagination pagination-md">
-					    <li class="page-item pre">
-					      <button class="page-link" title="<?php echo $count; ?>">&laquo;</button>
+				  <ul class="pagination pagination-md">
+				    <li class="page-item pre">
+				      <button class="page-link" title="<?php echo $count; ?>">&laquo;</button>
+				    </li>
+				<?php for ($i = 1; $i <= $count; $i++) { ?>
+					    <li class="page-item">
+					      	<button class="page-link button-link" title="<?php echo $i; ?>"><?php echo $i; ?></button>
 					    </li>
-					<?php for ($i = 1; $i <= $count; $i++) { ?>
-						    <li class="page-item">
-						      	<button class="page-link button-link" title="<?php echo $i; ?>"><?php echo $i; ?></button>
-						    </li>
-					<?php } ?>
-					    <li class="page-item next">
-					      <button class="page-link" title="2">&raquo;</button>
-					    </li>
-					  </ul>
-					</div>
+				<?php } ?>
+				    <li class="page-item next">
+				      <button class="page-link" title="2">&raquo;</button>
+				    </li>
+				  </ul>
 				</div>
 			</div>
 		</div>
@@ -71,8 +69,8 @@
 		     		<p>
 	     				<div class="input-group">
 		     				<button type="button" id="sm-price" name="sm-price" class="btn btn-primary"><i class="fa fa-caret-left" style="font-size: 20px"></i></button>
-		     				<input type="number" name="min-price" id="min-price" class="form-control price col-3" required placeholder="Min">
-		     				<input type="number" name="max-price" id="max-price" class="form-control price col-3" required placeholder="Max">
+		     				<input type="number" name="min-price" id="min-price" class="form-control price col-3" required placeholder="Min" autocomplete="off">
+		     				<input type="number" name="max-price" id="max-price" class="form-control price col-3" required placeholder="Max" autocomplete="off">
 		     			</div>
 		     		</p><br />
 				    <div class="custom-control custom-radio">
@@ -114,6 +112,13 @@
 				</form>
 		     </p>
 		</div>
+	</div>
+</div>
+<div class="load-ajax">
+	<div class="orbit-spinner">
+	  <div class="orbit"></div>
+	  <div class="orbit"></div>
+	  <div class="orbit"></div>
 	</div>
 </div>
 <div class="alert alert-dismissible alert-warning alert-require animated">
@@ -181,48 +186,53 @@
 			},
 			success: function(res){
 				$('#data').html(res);
+				var countPagi = $('#count-pagi').data('count-pagi');
+				pagination();
 			}
 		});
 
-		const li = 'ul.pagination li.page-item:not(.pre):not(.next)';
-		$(li + ':nth-child(2) .button-link').addClass('active');
+		const pagination = function(){
+			const li = 'ul.pagination li.page-item:not(.pre):not(.next)';
+				
+			$(`${li}:nth-child(2) .button-link`).addClass('active');
 
-		$('.page-link').click(function(){
-			let page = parseInt($(this).attr('title')),
-				linkLen = $(li + ' .button-link').length,
-				activeLi = page;
+			$('.page-link').click(function(){
+				let page = parseInt($(this).attr('title')),
+					linkLen = $(`${li} .button-link`).length,
+					activeLi = page;
 
-			for (let i = 0; i < linkLen; i++) $(li + ' .button-link').removeClass('active');
-			$(li + ':nth-child(' + (++activeLi) + ') .button-link').addClass('active');
+				for (let i = 0; i < linkLen; i++) $(`${li} .button-link`).removeClass('active');
+				$(`${li}:nth-child(${++activeLi}) .button-link`).addClass('active');
 
-			document.cookie = `page=${page}`;
-			
-			$.ajax({
-				url: './ajax/ajax_get_product.php',
-				data: { 
-					page: page,
-					type: 'product_main'
-				},
-				success(res){
-					$('#data').html(res);
+				document.cookie = `page=${page}`;
+				
+				$.ajax({
+					url: './ajax/ajax_get_product.php',
+					data: { 
+						page: page,
+						type: 'product_main'
+					},
+					success(res){
+						$('#data').html(res);
+					}
+				});
+
+				let pre = document.cookie.match(/\d/g)[0],
+					nxt = document.cookie.match(/\d/g)[0];
+
+				if(pre == 1){
+					$('.pre .page-link').attr('title', <?php echo $count; ?>);
+				} else {
+					$('.pre .page-link').attr('title', --pre);
+				}
+
+				if(nxt == <?php echo $count; ?>){
+					$('.next .page-link').attr('title', '1');
+				} else {
+					$('.next .page-link').attr('title', ++nxt);
 				}
 			});
-
-			let pre = document.cookie.match(/\d/g)[0],
-				nxt = document.cookie.match(/\d/g)[0];
-
-			if(pre == 1){
-				$('.pre .page-link').attr('title', <?php echo $count; ?>);
-			} else {
-				$('.pre .page-link').attr('title', --pre);
-			}
-
-			if(nxt == <?php echo $count; ?>){
-				$('.next .page-link').attr('title', '1');
-			} else {
-				$('.next .page-link').attr('title', ++nxt);
-			}
-		});
+		}
 	});
 </script>
 <?php include_once './inc/footer.php'; ?>
