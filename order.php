@@ -16,9 +16,10 @@
 </script>
 
 <?php 
-	$conn = new Connection();
+	$limit     = 6;
+	$conn      = new Connection();
 	$countData = $conn->countData('product', 'ID');
-	$count = ceil($countData / Connection::$limit);
+	$count     = ceil($countData / $limit);
 	
 	if(isset($_POST['sm-save'])){
 		$_SESSION['DETAIL_PRODUCT'] = $_SESSION['TEMP_DATA'];
@@ -31,6 +32,7 @@
 		header('location: ./manage.php');
 	}
 ?>
+
 
 <div class="container-fluid">
 	<div class="row">

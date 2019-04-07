@@ -8,8 +8,8 @@
 		function getDataByWhere($table, $where, $field);
 		function countData($table, $field);
 		function insert($table, $data); 
-		function remove($table, $id);
-		function update($table, $id, $data);
+		function remove($table, $where);
+		function update($table, $where, $data);
 	}
 	
 	/**
@@ -21,7 +21,6 @@
 		private static $conn = NULL;
 		private static $pre = NULL;
 		private static $sql = NULL;
-		public static $limit = 6;
 
 		function __construct()
 		{
@@ -35,8 +34,8 @@
 					self::$conn = new PDO('mysql:host=' . HOSTNAME . ';dbname=' . DBNAME, USERNAME, PASSWORD, array(PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES utf8'));
 					self::$conn -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 					return self::$conn;
-				} catch (PDOException $e) {
-					echo $e -> getMessage();
+				} catch (PDOException $ex) {
+					echo $ex -> getMessage();
 				}
 			}
 		}
@@ -49,80 +48,71 @@
 		public function getDataAll($table, $orderBy = '', $sort = 'ASC')
 		{
 			if(self::$conn !== NULL){
-				if($table === 'product'){
-					$datas = [];
-					if($orderBy !== ''){
-						self::$sql = "SELECT * FROM {$table} ORDER BY {$orderBy} {$sort}";
-					} else {
-						self::$sql = "SELECT * FROM {$table}";
-					}
-					self::$pre = self::$conn -> prepare(self::$sql);
-					self::$pre->execute();
-					while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
-						$datas[] = $row;
-					}
-					return $datas;
+				$datas = [];
+				if($orderBy !== ''){
+					self::$sql = "SELECT * FROM {$table} ORDER BY {$orderBy} {$sort}";
+				} else {
+					self::$sql = "SELECT * FROM {$table}";
 				}
+				self::$pre = self::$conn -> prepare(self::$sql);
+				self::$pre->execute();
+				while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
+					$datas[] = $row;
+				}
+				return $datas;
 			} else{ return 0; }
 		}
 
 		public function getRowByWhere($table, $where, $field)
 		{
 			if(self::$conn !== NULL){
-				if($table === 'product'){
-					if(is_array($field)){ $field = implode(',', $field); }
-					self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
-					self::$pre = self::$conn -> prepare(self::$sql);
-					self::$pre->execute();
-					return self::$pre->fetch();
-				}
+				if(is_array($field)){ $field = implode(',', $field); }
+				self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
+				self::$pre = self::$conn -> prepare(self::$sql);
+				self::$pre->execute();
+				return self::$pre->fetch();
 			} else{ return 0; }
 		}
 
 		public function getDataByWhere($table, $where, $field)
 		{
 			if(self::$conn !== NULL){
-				if($table === 'product'){
-					$datas = [];
-					if(is_array($field)){ $field = implode(',', $field); }
-					self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
-					self::$pre = self::$conn -> prepare(self::$sql);
-					self::$pre->execute();
-					while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
-						$datas[] = $row;
-					}
-					return $datas;
+				$datas = [];
+				if(is_array($field)){ $field = implode(',', $field); }
+				self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
+				self::$pre = self::$conn -> prepare(self::$sql);
+				self::$pre->execute();
+				while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
+					$datas[] = $row;
 				}
+				return $datas;
 			} else{ return 0; }
 		}
 
-		public function getDataLimit($table, $page = 0, $where = '')
+		public function getDataLimit($table, $page = 0, $where = '', $limit = 6)
 		{
 			if(self::$conn !== NULL){
-				$limit = self::$limit;
-				if($table === 'product'){
-					$from = ($limit * $page) - $limit;
-					$datas = [];
-					if($page == 0){
-						if($where !== ''){
-							self::$sql = "SELECT * FROM {$table} WHERE {$where} LIMIT {$page}, {$limit}";
-						} else{
-							self::$sql = "SELECT * FROM {$table} LIMIT {$page}, {$limit}";
-						}
+				$from = ($limit * $page) - $limit;
+				$datas = [];
+				if($page == 0){
+					if($where !== ''){
+						self::$sql = "SELECT * FROM {$table} WHERE {$where} LIMIT {$page}, {$limit}";
 					} else{
-						if($where !== ''){
-							self::$sql = "SELECT * FROM {$table} WHERE {$where} LIMIT {$from}, {$limit}";
-						} else{
-							self::$sql = "SELECT * FROM {$table} LIMIT {$from}, {$limit}";
-						}
+						self::$sql = "SELECT * FROM {$table} LIMIT {$page}, {$limit}";
 					}
-					self::$pre = self::$conn -> prepare(self::$sql);
-					self::$pre->execute();
-					while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
-						$datas[] = $row;
+				} else{
+					if($where !== ''){
+						self::$sql = "SELECT * FROM {$table} WHERE {$where} LIMIT {$from}, {$limit}";
+					} else{
+						self::$sql = "SELECT * FROM {$table} LIMIT {$from}, {$limit}";
 					}
-					return $datas;
 				}
+				self::$pre = self::$conn -> prepare(self::$sql);
+				self::$pre->execute();
+				while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
+					$datas[] = $row;
+				}
+				return $datas;
 			} else{ return 0; }
 		}
 
@@ -147,18 +137,18 @@
 					return self::$pre->execute($data);
 				}
 				if($table === 'reports_revenue'){
-					self::$sql = "INSERT INTO {$table}(MONTH, TOTAL_MONEY, TOTAL_AMOUNT, DATE_CREATE, DETAIL) VALUES(?,?,?,?,?)";
+					self::$sql = "INSERT INTO {$table} (MONTH, YEAR, TOTAL_MONEY, TOTAL_AMOUNT, DATE_CREATE, TIME, DETAIL) VALUES(?,?,?,?,?,?,?)";
 					self::$pre = self::$conn -> prepare(self::$sql);
 					return self::$pre->execute($data);
 				}
 			} else{ return 0; }
 		}
 
-		public function remove($table, $id)
+		public function remove($table, $where)
 		{
 			if(self::$conn !== NULL){
 				if($table === 'product'){
-					self::$sql = "DELETE FROM {$table} WHERE ID = :ID";
+					self::$sql = "DELETE FROM {$table} WHERE {$where}";
 					self::$pre = self::$conn -> prepare(self::$sql);
 					self::$pre -> bindParam(':ID', $id, PDO::PARAM_INT);
 					return self::$pre -> execute();
@@ -166,9 +156,16 @@
 			} else{ return 0; }
 		}
 
-		public function update($table, $id, $data)
+		public function update($table, $where, $data)
 		{
-			
+			if(self::$conn !== NULL){
+				if($table === 'product'){
+					self::$sql = "UPDATE {$table} SET NAME = ?, PRICE = ?, IMAGE = ?, DESCRIPTION = ?, TYPE = ?, STATUS = ? WHERE {$where}";
+					self::$pre = self::$conn -> prepare(self::$sql);
+					self::$pre -> execute($data);
+					return self::$pre -> rowCount();
+				}
+			} else{ return 0; }
 		}
 	}
 	

@@ -41,7 +41,8 @@
 		$result = $conn -> getDataLimit('product');
 	}
 	
-	$count = ceil($countData / Connection::$limit);
+	$limit = 6;
+	$count = ceil($countData / $limit);
 	$data = json_decode(json_encode($result), true);
 ?>
 
@@ -61,12 +62,12 @@
 	    	else echo 'Hết hàng'; 
 	    ?></td>
 	    <td class="text-center icon">
-	    	<a href="#" id="edit-product">
+	    	<a href="../admin/update_product.php?id=<?php echo $value['ID']; ?>" id="edit-product">
 	    		<i class="fa fa-pen"></i>
 	    	</a>
 	    </td>
 	    <td class="text-center icon">
-	    	<a href="../admin/delete_product.php?id=<?php echo $value['ID']; ?>" class="del-product">
+	    	<a onclick="return confirm('Bạn có chắc chắn muốn xóa?');" href="../admin/delete_product.php?id=<?php echo $value['ID']; ?>" class="del-product">
 	    		<i class="fa fa-trash"></i>
 	    	</a>
 	    </td>

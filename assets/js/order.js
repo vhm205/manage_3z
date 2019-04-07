@@ -22,64 +22,54 @@ $(document).ready(function() {
 	})
 
 	selectType.addEventListener('input', function(){
-		let data = {
+		ajax('./ajax/ajax_get_product.php', '#data', {
 			page: 0,
 			type: 'product_main',
 			where: true,
 			select_by_type: this.value
-		}
-
-		ajax('./ajax/ajax_get_product.php', '#data', data);
+		});
 	})
 
 	remain.addEventListener('input', function(){
 		if(priceUp.checked){
-			let data = {
+			ajax('./ajax/ajax_get_product.php', '#data', {
 				page: 0,
 				type: 'product_main',
 				where: true,
 				status: 'remain'
-			}
-
-			ajax('./ajax/ajax_get_product.php', '#data', data);
+			});
 		}
 	})
 	outOfStock.addEventListener('input', function(){
 		if(priceUp.checked){
-			let data = {
+			ajax('./ajax/ajax_get_product.php', '#data', {
 				page: 0,
 				type: 'product_main',
 				where: true,
 				status: 'out-of-stock'
-			}
-
-			ajax('./ajax/ajax_get_product.php', '#data', data);
+			});
 		}
 	})
 
 
 	priceUp.addEventListener('input', function(){
 		if(priceUp.checked){
-			let data = {
+			ajax('./ajax/ajax_get_product.php', '#data', {
 				page: 0,
 				type: 'product_main',
 				where: true,
 				price: 'up'
-			}
-
-			ajax('./ajax/ajax_get_product.php', '#data', data);
+			});
 		}
 	})
 	priceDown.addEventListener('input', function(){
 		if(priceDown.checked){
-			let data = {
+			ajax('./ajax/ajax_get_product.php', '#data', {
 				page: 0,
 				type: 'product_main',
 				where: true,
 				price: 'down'
-			}
-
-			ajax('./ajax/ajax_get_product.php', '#data', data);
+			});
 		}
 	})
 
@@ -97,29 +87,32 @@ $(document).ready(function() {
 			return;
 		}
 
-		let data = {
+		ajax('./ajax/ajax_get_product.php', '#data', {
 			page: 0,
 			type: 'product_main',
 			where: true,
 			min: minPrice,
 			max: maxPrice
-		}
-
-		ajax('./ajax/ajax_get_product.php', '#data', data);
+		});
 	})
 
 	btnSearch.addEventListener('click', function(){
-		const wordSearch = document.getElementById('search-order').value || '',
-			  data = {
+		const wordSearch = document.getElementById('search-order').value || '';
+
+		if(wordSearch !== ''){
+			ajax('./ajax/ajax_get_product.php', '#data', {
 				  page: 0,
 				  type: 'product_main',
 				  where: true,
 				  word: wordSearch
-			 }
-		if(wordSearch !== '')
-			ajax('./ajax/ajax_get_product.php', '#data', data);
-		else
-			ajax('./ajax/ajax_get_product.php', '#data', {page:0,type:'product_main'});
+			 });
+		}
+		else{
+			ajax('./ajax/ajax_get_product.php', '#data', {
+				page:0,
+				type:'product_main'
+			});
+		}
 	})
 
 	const ajax = function(url, elRes = '', data = {}, cache = true){

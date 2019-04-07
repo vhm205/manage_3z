@@ -54,7 +54,7 @@
 
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-10 col-sm-10 col-md-10 col-lg-10">
+		<div class="col-12 col-sm-12 col-md-10 col-lg-10">
 			<ol class="breadcrumb">
 			  <li class="breadcrumb-item"><a href="./">Trang chủ</a></li>
 			  <li class="breadcrumb-item"><a href="./manage.php">Quản lý</a></li>

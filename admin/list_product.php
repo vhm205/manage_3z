@@ -4,14 +4,15 @@
 	include_once '../inc/connect.php';
 	include_once '../inc/nav.php';
 
-	$conn = new Connection();
+	$limit 	   = 6;
+	$conn      = new Connection();
 	$countData = $conn->countData('product', 'ID');
-	$count = ceil($countData / Connection::$limit);
+	$count     = ceil($countData / $limit);
 ?>
 <script>
 	const link = document.createElement('link');
-	link.rel = 'stylesheet';
-	link.href = '../assets/css/admin.css';
+	link.rel   = 'stylesheet';
+	link.href  = '../assets/css/admin.css';
 	document.head.appendChild(link);
 </script>
 

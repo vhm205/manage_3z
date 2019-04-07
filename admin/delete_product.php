@@ -9,7 +9,7 @@
 		$where = "ID = {$id}";
 		$result = $conn -> getRowByWhere('product', $where, 'IMAGE');
 		unlink($result['IMAGE']);
-		$conn -> remove('product', $id);
+		$conn -> remove('product', $where);
 		header('location: list_product.php');
 	} else {
 		header('location: list_product.php');

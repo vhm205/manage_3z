@@ -18,7 +18,7 @@
           <a class="dropdown-item" href="<?php echo $_SESSION['BASE_URL']; ?>admin/insert_product.php">Thêm sản phẩm</a>
           <a class="dropdown-item" href="<?php echo $_SESSION['BASE_URL']; ?>admin/list_product.php">Danh sách sản phẩm</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Separated link</a>
+          <a class="dropdown-item" href="<?php echo $_SESSION['BASE_URL']; ?>admin/reports.php">Báo cáo</a>
         </div>
       </li>
     </ul>
