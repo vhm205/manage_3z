@@ -4,7 +4,7 @@
 		static function disconnect();
 		function getDataAll($table);
 		function getDataLimit($table, $page, $limit);
-		function getRowByWhere($table, $id, $field);
+		function getRowByWhere($table, $where, $field);
 		function getDataByWhere($table, $where, $field);
 		function countData($table, $field);
 		function insert($table, $data); 
@@ -55,7 +55,7 @@
 					self::$sql = "SELECT * FROM {$table}";
 				}
 				self::$pre = self::$conn -> prepare(self::$sql);
-				self::$pre->execute();
+				self::$pre -> execute();
 				while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
 					$datas[] = $row;
 				}
@@ -69,8 +69,8 @@
 				if(is_array($field)){ $field = implode(',', $field); }
 				self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
 				self::$pre = self::$conn -> prepare(self::$sql);
-				self::$pre->execute();
-				return self::$pre->fetch();
+				self::$pre -> execute();
+				return self::$pre -> fetch();
 			} else{ return 0; }
 		}
 
@@ -81,7 +81,7 @@
 				if(is_array($field)){ $field = implode(',', $field); }
 				self::$sql = "SELECT {$field} FROM {$table} WHERE {$where}";
 				self::$pre = self::$conn -> prepare(self::$sql);
-				self::$pre->execute();
+				self::$pre -> execute();
 				while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
 					$datas[] = $row;
 				}
@@ -108,7 +108,7 @@
 					}
 				}
 				self::$pre = self::$conn -> prepare(self::$sql);
-				self::$pre->execute();
+				self::$pre -> execute();
 				while ($row = self::$pre -> fetch(PDO::FETCH_OBJ)) {
 					$datas[] = $row;
 				}
@@ -119,12 +119,10 @@
 		public function countData($table, $field)
 		{
 			if(self::$conn !== NULL){
-				if($table === 'product'){
-					self::$sql = "SELECT COUNT({$field}) FROM {$table}";
-					self::$pre = self::$conn -> prepare(self::$sql);
-					self::$pre -> execute();
-					return self::$pre -> fetchColumn();
-				}
+				self::$sql = "SELECT COUNT({$field}) FROM {$table}";
+				self::$pre = self::$conn -> prepare(self::$sql);
+				self::$pre -> execute();
+				return self::$pre -> fetchColumn();
 			} else{ return 0; }
 		}
 
@@ -134,12 +132,12 @@
 				if($table === 'product'){
 					self::$sql = "INSERT INTO {$table}(NAME, PRICE, IMAGE, DESCRIPTION, TYPE, STATUS) VALUES(?,?,?,?,?,?)";
 					self::$pre = self::$conn -> prepare(self::$sql);
-					return self::$pre->execute($data);
+					return self::$pre -> execute($data);
 				}
 				if($table === 'reports_revenue'){
 					self::$sql = "INSERT INTO {$table} (MONTH, YEAR, TOTAL_MONEY, TOTAL_AMOUNT, DATE_CREATE, TIME, DETAIL) VALUES(?,?,?,?,?,?,?)";
 					self::$pre = self::$conn -> prepare(self::$sql);
-					return self::$pre->execute($data);
+					return self::$pre -> execute($data);
 				}
 			} else{ return 0; }
 		}
@@ -150,7 +148,6 @@
 				if($table === 'product'){
 					self::$sql = "DELETE FROM {$table} WHERE {$where}";
 					self::$pre = self::$conn -> prepare(self::$sql);
-					self::$pre -> bindParam(':ID', $id, PDO::PARAM_INT);
 					return self::$pre -> execute();
 				}
 			} else{ return 0; }

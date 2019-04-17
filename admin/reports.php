@@ -7,9 +7,16 @@
 	$limit     = 6;
 	$conn      = new Connection();
 	$where     = "0 = 0 ORDER BY ID DESC";
-	$data      = $conn->getDataLimit('reports_revenue', 0, $where, 12);
-	// $countData = $conn->countData('reports_revenue', 'ID');
-	// $count     = ceil($countData / $limit);
+
+	if(isset($_GET['page']) && filter_var($_GET['page'], FILTER_VALIDATE_INT, array('min_range' => 1))){
+		$page = $_GET['page'];
+		$data = $conn->getDataLimit('reports_revenue', $page, $where);
+	} else{
+		$data = $conn->getDataLimit('reports_revenue', 0, $where);
+	}
+
+	$countData = $conn->countData('reports_revenue', 'ID');
+	$count     = ceil($countData / $limit);
 	$data      = json_decode(json_encode($data), true);
 ?>
 <script>
@@ -76,6 +83,24 @@
 				</table>
 			</fieldset>
 			<!-- Pagination -->
+			<div id="pagi">
+			  <ul class="pagination">
+			    <li class="page-item previous">
+			      <a class="page-link" href="./reports.php?page=<?php 
+			      	if(isset($_GET['page']) && $_GET['page'] > 1){$pre = $_GET['page'];echo $pre - 1;}
+			      	else{$pre = $count;echo $pre;}?>">&laquo;</a>
+			    </li>
+			<?php for ($i = 1; $i <= $count; $i++) { ?>
+				    <li class="page-item">
+				      <a class="page-link" href="./reports.php?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+				    </li>
+			<?php } ?>
+			    <li class="page-item next">
+			      <a class="page-link" href="./reports.php?page=<?php if(!isset($_GET['page'])){$next = 2;echo $next;}
+			      	elseif(isset($_GET['page']) && $_GET['page'] < $count){$next = $_GET['page'];echo $next + 1;}else{$next=1;echo $next;}?>">&raquo;</a>
+			    </li>
+			  </ul>
+			</div>
 		</div>
 		<div class="col-12 col-sm-12 col-md-4 col-lg-4 mt-5">
 		     <p>
@@ -140,12 +165,19 @@
 			  selectYear   = $('#select-year'),
 			  selectDetail = $('.datepicker');
 
+		<?php if(isset($_GET['page'])) { ?>
+			$('ul.pagination .page-item:not(.previous):not(.next):nth-child(' + <?php echo $_GET['page'] + 1; ?> + ')').addClass('active');
+		<?php } else { ?>
+			$('ul.pagination .page-item:not(.previous):not(.next):nth-child(2)').addClass('active');
+		<?php } ?>
+
 		$('#select-month, #select-year').change(function(e){
 			_ajax('../ajax/ajax_get_reports.php', 'POST', false, {
 				type: 'YEAR-MONTH',
 				month: selectMonth.val(),
 				year:  selectYear.val()
 			})
+			$('#pagi').html('');
 		})
 
 		selectDetail.change(function(event) {
@@ -153,18 +185,19 @@
 				type: 'YEAR-MONTH-DAY',
 				date: selectDetail.val()
 			})
+			$('#pagi').html('');
 		});
 
 		$('.btn-income').click(function(e){
 			$.ajax({
 				url: '../ajax/ajax_get_reports.php',
-				data: {type: 'INCOME'}
+				data: { type: 'INCOME' }
 			})
 			.done(function(res) {
 				console.log(`success: ${res}`);
 			})
 			.fail(function(err) {
-				console.log("error: " + err);
+				console.log(`error: ${err}`);
 			})
 		})
 
