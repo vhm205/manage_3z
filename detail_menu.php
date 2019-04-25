@@ -3,6 +3,11 @@
 	include_once './config/config.php';
 	include_once './inc/connect.php';
 	include_once './inc/nav.php';
+
+	if(!isset($_SESSION['USERNAME'])){
+		header('location: ./login.php');
+		exit();
+	}
 	
 	if(isset($_GET['index']) || filter_var($_GET['index'], FILTER_VALIDATE_INT)){
 		$index = strip_tags($_GET['index']);
@@ -23,14 +28,14 @@
 	}
 ?>
 <script>
-	const createLink = (rel, href) => {
+	const createLink = (href, rel = "stylesheet") => {
 		const link = document.createElement('link');
 		link.rel   = rel;
 		link.href  = href;
 		document.head.appendChild(link);
 	}
-	createLink('stylesheet', './assets/css/main.css');
-	createLink('stylesheet', './assets/css/sweetalert2.min.css');
+	createLink('./assets/css/sweetalert2.min.css');
+	createLink('./assets/css/main.css');
 </script>
 
 <?php
@@ -94,7 +99,7 @@
 				      	<?php echo number_format($value[0] * $value['PRICE'],0,',',',') ?>
 				      </td>
 				      <td class="text-center">
-				      	<a href="./ajax/ajax_delete_product.php?id=<?php echo $key ?>&index=<?php echo $index; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa không?')" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+				      	<a href="./ajax/ajax_delete_product.php?id=<?php echo $key ?>&index=<?php echo $index; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa?')" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
 				      </td>
 				    </tr>
 				    <?php
@@ -180,7 +185,7 @@
 			}).then((result) => {
 			  	if (result.value) {
 				  	$.ajax({
-				  		url: './pay_menu.php',
+				  		url: './ajax/ajax_pay_menu.php',
 				  		type: 'POST',
 				  		cache: false,
 				  		data: {

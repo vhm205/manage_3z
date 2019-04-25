@@ -5,12 +5,16 @@
 	include_once '../inc/connect.php';
 	include_once '../inc/nav.php';
 	
+	if(!isset($_SESSION['USERNAME'])){
+		header('location: ./login.php');
+		exit();
+	}
 
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
-		$name = $_POST['name'];
-		$price = $_POST['price'];
-		$description = $_POST['description'];
-		$type = $_POST['type'];
+		$name 		 = safe($_POST['name']);
+		$price 		 = safe($_POST['price']);
+		$description = safe($_POST['description']);
+		$type 		 = safe($_POST['type']);
 
 		if(empty($_POST['status'])){
 			$status = 0;
@@ -42,9 +46,9 @@
 			$err[] = 'Ảnh phải là định dạng JPG, JPEG, PNG, BMP or GIF';
 			$uploadOK = 0;
 		}
-
-		$data = array($name, $price, $target_file, $description, $type, $status);
+	
 		$conn = new Connection();
+		$data = array($name, $price, $target_file, $description, $type, $status);
 
 		if($uploadOK == 1){
 			if($conn->insert('product', $data)){

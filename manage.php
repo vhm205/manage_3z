@@ -1,6 +1,11 @@
 <?php 
 	include_once './inc/header.php'; 
 	include_once './inc/nav.php';
+
+	if(!isset($_SESSION['USERNAME'])){
+		header('location: ./login.php');
+		exit();
+	}
 ?>
 
 <script>
@@ -132,7 +137,7 @@
 			?>
  				<p>
 			    	<div class="alert alert-dismissible alert-info">
-					  <a href="./remove_menu.php?index=<?php echo $key; ?>" onclick="return confirm('Do you want to delete?')" class="btn btn-danger btn-sm float-right">Xóa</a>
+					  <a href="./remove_menu.php?index=<?php echo $key; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa?')" class="btn btn-danger btn-sm float-right">Xóa</a>
 					  <a href="./detail_menu.php?index=<?php echo $key; ?>" class="btn btn-primary btn-sm float-right">Chi tiết</a>
 					  <strong>Thực đơn <?php echo $value[0]['TABLE']; ?></strong>
 					</div>

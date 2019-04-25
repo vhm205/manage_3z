@@ -1,8 +1,8 @@
 <?php
 	session_start();
 	date_default_timezone_set('Asia/Ho_Chi_Minh');
-	include_once './config/config.php';
-	include_once './inc/connect.php';
+	include_once '../config/config.php';
+	include_once '../inc/connect.php';
 
 	$index        = $_REQUEST['index'];
 	$total_money  = $_REQUEST['total_money'];

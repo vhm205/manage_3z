@@ -4,15 +4,20 @@
 	include_once '../inc/connect.php';
 	include_once '../inc/nav.php';
 
+	if(!isset($_SESSION['USERNAME'])){
+		header('location: ./login.php');
+		exit();
+	}
+
 	$limit     = 6;
 	$conn      = new Connection();
 	$where     = "0 = 0 ORDER BY ID DESC";
 
 	if(isset($_GET['page']) && filter_var($_GET['page'], FILTER_VALIDATE_INT, array('min_range' => 1))){
 		$page = $_GET['page'];
-		$data = $conn->getDataLimit('reports_revenue', $page, $where);
+		$data = $conn->getDataLimit('reports_revenue', $page, $where, $limit);
 	} else{
-		$data = $conn->getDataLimit('reports_revenue', 0, $where);
+		$data = $conn->getDataLimit('reports_revenue', 0, $where, $limit);
 	}
 
 	$countData = $conn->countData('reports_revenue', 'ID');
@@ -107,7 +112,7 @@
 		     	<div class="form-group">
 		     		<label class="col-form-label">Lọc theo tháng, năm</label>
 		     		<?php 
-		     			$dateAll = $conn->getDataByWhere('reports_revenue', '0 = 0', 'MONTH, YEAR');
+		     			$dateAll = $conn->getDataByWhere('reports_revenue', '0 = 0', 'YEAR');
 		     			$dateAll = json_decode(json_encode($dateAll), true);
 		     			foreach ($dateAll as $value) {
 		     				$years[]  = $value['YEAR'];
@@ -189,16 +194,11 @@
 		});
 
 		$('.btn-income').click(function(e){
-			$.ajax({
-				url: '../ajax/ajax_get_reports.php',
-				data: { type: 'INCOME' }
+			$('table.table.table-inverse>thead>tr>th').eq(3).text('Tổng số lượng').next().text('Tổng thu nhập').next().remove();
+			_ajax('../ajax/ajax_get_reports.php', 'POST', false, {
+				type: 'INCOME'
 			})
-			.done(function(res) {
-				console.log(`success: ${res}`);
-			})
-			.fail(function(err) {
-				console.log(`error: ${err}`);
-			})
+			$('#pagi').html('');
 		})
 
 		const _ajax = (url, type = 'POST', cache = false, data = {}, id = '#data') => {

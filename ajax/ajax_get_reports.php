@@ -4,6 +4,7 @@
 
 	$conn  = new Connection();
 	$type  = $_REQUEST['type'];
+	$count = 1;
 
 	switch ($type) {
 		case 'YEAR-MONTH':
@@ -19,14 +20,13 @@
 			$data  = $conn->getDataByWhere('reports_revenue', $where, "*");
 			break;
 		case 'INCOME':
-			$data = $conn->getDataLimit('reports_revenue', 0, '', 10);
-			$data  = json_decode(json_encode($data), true);
-			echo '<pre>';
-			var_dump($data);
-			echo '</pre>';
+			$fields = "ID, MONTH, YEAR, SUM(TOTAL_AMOUNT) AS SUM_AMOUNT, SUM(TOTAL_MONEY) AS SUM_MONEY";
+			$where = "0 = 0 GROUP BY MONTH, YEAR ORDER BY ID DESC";
+			$data = $conn->getDataByWhere('reports_revenue', $where, $fields);
 			break;
 		default:
 			echo $type;
+			exit();
 			break;
 	}
 	
@@ -36,7 +36,7 @@
 <?php foreach ($data as $value): ?>
 	<tr>
 		<th scope="row">
-			<?php echo $value['ID']; ?>
+			<?php echo $count; ?>
 		</th>
 	    <td>
 	    	<?php 
@@ -60,9 +60,27 @@
 	    	<?php echo number_format($value['TOTAL_MONEY'], 0, ',', ','); ?>	
 	    </td>
 	</tr>
+	<?php $count++; ?>
 <?php endforeach ?>
 <?php } elseif($type === 'INCOME') { ?>
 <?php foreach ($data as $value): ?>
-	
+	<tr>
+		<th scope="row">
+			<?php echo $count; ?>
+		</th>
+	    <td>
+	    	<?php echo $value['MONTH']; ?>
+	    </td>
+	    <td>
+	    	<?php echo $value['YEAR']; ?>
+	    </td>
+	    <td>
+	    	<?php echo $value['SUM_AMOUNT']; ?>
+	    </td>
+	    <td>
+	    	<?php echo number_format($value['SUM_MONEY'], 0, ',', ','); ?>
+	    </td>
+	</tr>
+	<?php $count++; ?>
 <?php endforeach ?>
 <?php } ?>

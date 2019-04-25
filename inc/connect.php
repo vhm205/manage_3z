@@ -139,6 +139,14 @@
 					self::$pre = self::$conn -> prepare(self::$sql);
 					return self::$pre -> execute($data);
 				}
+				if($table === 'login'){
+					// $salt 		= crypt(microtime());
+					// $staticSalt = "vhm102";
+		 			// $password	= md5($staticSalt.$password.$salt);
+					self::$sql = "INSERT INTO {$table} (USERNAME, PASSWORD, SALT) VALUES(?, ?, ?)";
+					self::$pre = self::$conn -> prepare(self::$sql);
+					return self::$pre -> execute($data);
+				}
 			} else{ return 0; }
 		}
 

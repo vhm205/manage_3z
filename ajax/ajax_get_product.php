@@ -5,7 +5,7 @@
 	$conn = new Connection();
 
 	if(isset($_REQUEST['page'])){
-		$page = $_REQUEST['page'];
+		$page  = $_REQUEST['page'];
 		$where = '';
 
 		if(isset($_REQUEST['where'])){
@@ -14,8 +14,8 @@
 				$where = "NAME LIKE '%{$words}%' OR DESCRIPTION LIKE '%{$words}%'";
 			}
 			if(isset($_REQUEST['min']) && isset($_REQUEST['max'])){
-				$min = $_REQUEST['min'];
-				$max = $_REQUEST['max'];
+				$min   = $_REQUEST['min'];
+				$max   = $_REQUEST['max'];
 				$where = "PRICE >= {$min} AND PRICE <= {$max}";
 			}
 			if(isset($_REQUEST['price'])){
@@ -24,26 +24,26 @@
 			}
 			if(isset($_REQUEST['status'])){
 				$status = $_REQUEST['status'];
-				$where = ($status === 'remain') ? "STATUS = 1" : "STATUS = 0";
+				$where  = ($status === 'remain') ? "STATUS = 1" : "STATUS = 0";
 			}
 			if(isset($_REQUEST['select_by_type'])){
 				$select_by_type = $_REQUEST['select_by_type'];
 				$where = ($select_by_type === 'Món ăn') ? "TYPE = 'Món ăn'" : "TYPE = 'Đồ uống'";
 			}
-			$result = $conn -> getDataLimit('product', 0, $where);
-			$countData = $conn -> getDataByWhere('product', $where, 'ID');
-			$countData = count($countData);
+			$result 	= $conn->getDataLimit('product', 0, $where);
+			$countData  = $conn->getDataByWhere('product', $where, 'ID');
+			$countData  = count($countData);
 		} else{
-			$result = $conn->getDataLimit('product', $page);
+			$result    = $conn->getDataLimit('product', $page);
 			$countData = $conn->countData('product', 'ID');
 		}
 	} else{
-		$result = $conn -> getDataLimit('product');
+		$result = $conn->getDataLimit('product');
 	}
 	
 	$limit = 6;
 	$count = ceil($countData / $limit);
-	$data = json_decode(json_encode($result), true);
+	$data  = json_decode(json_encode($result), true);
 ?>
 
 
@@ -110,7 +110,7 @@
 	<script>
 		document.getElementById('product-'+<?php echo $value['ID'] ?>).addEventListener('click', function(e){
 			e.preventDefault();
-			const id = this.dataset.id,
+			const id 	 = this.dataset.id,
 				  status = document.getElementById('product-status-<?php echo $value['ID']; ?>');
 			if(!status.children[0].classList.contains('red')){
 				$.ajax({

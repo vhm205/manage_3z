@@ -12,6 +12,17 @@
 		include './config/config.php';
 		include './inc/connect.php';
 
+		$conn = new Connection();
+		$fields = "MONTH, YEAR, SUM(TOTAL_AMOUNT) AS SUM_AMOUNT, SUM(TOTAL_MONEY)";
+		$where 	= "0 = 0 GROUP BY MONTH, YEAR ORDER BY ID DESC";
+		$data 	= $conn->getDataByWhere('reports_revenue', $where, $fields);
+		$data 	= json_decode(json_encode($data), true);
+
+		echo '<pre>';
+		var_dump($data);
+		echo '</pre>';
+
+
 		if($_SERVER['REQUEST_METHOD'] == 'POST'){
 			$objExcel = new PHPExcel();
 			$objExcel->setActiveSheetIndex(0);
@@ -24,7 +35,14 @@
 			$sheet->setCellValue('D'.$rowCount, 'DATE CREATE');
 			$sheet->setCellValue('E'.$rowCount, 'TIME');
 
-			$conn = new Connection();
+			$sheet->getColumnDimension('C')->setAutoSize(true);
+			$sheet->getColumnDimension('D')->setAutoSize(true);
+			$sheet->getColumnDimension('E')->setAutoSize(true);
+			$sheet->getColumnDimension('A')->setWidth(10);
+			$sheet->getColumnDimension('B')->setWidth(10);
+			$sheet->getStyle('A1:E1')->getFont()->setBold(true);
+
+			$conn 	= new Connection();
 			$fields = "MONTH, YEAR, TOTAL_MONEY, DATE_CREATE, TIME";
 			$result = $conn->getDataByWhere('reports_revenue', "0 = 0", $fields);
 			$result = json_decode(json_encode($result), true);
@@ -37,6 +55,12 @@
 				$sheet->setCellValue('D'.$rowCount, $value['DATE_CREATE']);
 				$sheet->setCellValue('E'.$rowCount, $value['TIME']);
 			}
+
+			$sheet->getStyle("A1:A$rowCount")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$sheet->getStyle("B1:B$rowCount")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$sheet->getStyle("C1:C$rowCount")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$sheet->getStyle("D1:D$rowCount")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$sheet->getStyle("E1:E$rowCount")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
 			$objWriter = new PHPExcel_Writer_Excel2007($objExcel);
 			$fileName = 'export.xlsx';

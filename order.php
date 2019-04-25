@@ -3,6 +3,11 @@
 	include_once './config/config.php';
 	include_once './inc/connect.php';
 	include_once './inc/nav.php';
+
+	if(!isset($_SESSION['USERNAME'])){
+		header('location: ./login.php');
+		exit();
+	}
 ?>
 <script>
 	const createLink = (rel, href) => {
