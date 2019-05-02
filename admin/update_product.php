@@ -135,7 +135,6 @@
 					  <textarea class="form-control input-edit" id="description" name="description" rows="3" autocomplete="off"><?php if(isset($description)) echo $description; ?></textarea>
 					</div>
 					<button type="submit" class="btn btn-block btn-primary">Cập nhật sản phẩm</button>
-					<button type="reset" class="btn btn-block btn-outline-danger">Reset</button>
 				</fieldset>
 			</form><br />
 		</div>

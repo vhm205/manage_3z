@@ -1,4 +1,6 @@
 <?php
+	session_start();
+	include_once '../inc/Classes/PHPExcel.php';
 	include_once '../config/config.php';
 	include_once '../inc/connect.php';
 
@@ -30,7 +32,8 @@
 			break;
 	}
 	
-	$data  = json_decode(json_encode($data), true);
+	$data = json_decode(json_encode($data), true);
+	$_SESSION['DATA_EXPORT'] = $data;
 ?>
 <?php if($type === 'YEAR-MONTH' || $type === 'YEAR-MONTH-DAY') { ?>
 <?php foreach ($data as $value): ?>
@@ -62,6 +65,11 @@
 	</tr>
 	<?php $count++; ?>
 <?php endforeach ?>
+	<tr>
+		<td colspan="5">
+			<input type="submit" class="btn btn-success col-6" name="export_excel_filter_default" value="Xuất file excel">
+		</td>
+	</tr>
 <?php } elseif($type === 'INCOME') { ?>
 <?php foreach ($data as $value): ?>
 	<tr>
@@ -83,4 +91,9 @@
 	</tr>
 	<?php $count++; ?>
 <?php endforeach ?>
+	<tr>
+		<td colspan="5">
+			<input type="submit" class="btn btn-success col-6" name="export_excel_filter" value="Xuất file excel">
+		</td>
+	</tr>
 <?php } ?>

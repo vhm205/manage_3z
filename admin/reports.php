@@ -1,5 +1,6 @@
 <?php 
 	include_once '../inc/header.php';
+	include_once '../inc/Classes/PHPExcel.php';
 	include_once '../config/config.php';
 	include_once '../inc/connect.php';
 	include_once '../inc/nav.php';
@@ -35,6 +36,29 @@
 	createLink('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css', 'stylesheet');
 </script>
 
+<?php 
+	if(isset($_POST['export_excel'])){
+		exportReports('Thống kê hóa đơn', $data, 'default');
+	}
+	if(isset($_POST['export_excel_filter_default'])){
+		if(isset($_SESSION['DATA_EXPORT'])){
+			$data = $_SESSION['DATA_EXPORT'];
+			exportReports('Thống kê hóa đơn', $data, 'default');
+		}
+	}
+	if(isset($_POST['export_excel_filter'])){
+		if(isset($_SESSION['DATA_EXPORT'])){
+			$data = $_SESSION['DATA_EXPORT'];
+			exportReports('Thu nhập theo tháng', $data, 'special', 'Thu nhập theo tháng.xlsx');
+		}
+	}
+	if(isset($_POST['export_excel_all'])){
+		$data = $conn->getDataAll('reports_revenue');
+		$data = json_decode(json_encode($data), true);
+		exportReports('Xuất toàn bộ báo cáo', $data, 'default');
+	}
+?>
+
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-12 col-xs-12 col-sm-12 col-md-8 col-lg-8">
@@ -44,48 +68,55 @@
 			</ol>
 			<fieldset>
 				<legend>Thống kê hóa đơn</legend>
-				<table class="table table-inverse animated flash text-center">
-					<thead>
-						<tr>
-						    <th scope="col">ID</th>
-						    <th scope="col">Tháng</th>
-						    <th scope="col">Năm</th>
-						    <th scope="col">Số lượng</th>
-						    <th scope="col">Thời gian</th>
-						    <th scope="col">Tổng tiền</th>
-						</tr>
-					</thead>
-					<tbody id="data">
-						<?php foreach ($data as $value): ?>
+				<form method="post">
+					<table class="table table-inverse animated flash text-center">
+						<thead>
 							<tr>
-								<th scope="row">
-									<?php echo $value['ID']; ?>
-								</th>
-							    <td>
-							    	<?php 
-							    		$date = date_create($value['DATE_CREATE']);
-							    		echo date_format($date, 'm');
-							    	?>
-							    </td>
-							    <td>
-							    	<?php 
-							    		$date = date_create($value['DATE_CREATE']);
-							    		echo date_format($date, 'Y');
-							    	?>
-							    </td>
-							    <td>
-							    	<?php echo $value['TOTAL_AMOUNT']; ?>
-							    </td>
-							    <td>
-							    	<?php echo $value['DATE_CREATE'] . ' | ' . $value['TIME']; ?>
-							    </td>
-							    <td>
-							    	<?php echo number_format($value['TOTAL_MONEY'], 0, ',', ','); ?>	
-							    </td>
+							    <th scope="col">ID</th>
+							    <th scope="col">Tháng</th>
+							    <th scope="col">Năm</th>
+							    <th scope="col">Số lượng</th>
+							    <th scope="col">Thời gian</th>
+							    <th scope="col">Tổng tiền</th>
 							</tr>
-						<?php endforeach ?>
-					</tbody>
-				</table>
+						</thead>
+						<tbody id="data">
+							<?php foreach ($data as $value): ?>
+								<tr>
+									<th scope="row">
+										<?php echo $value['ID']; ?>
+									</th>
+								    <td>
+								    	<?php 
+								    		$date = date_create($value['DATE_CREATE']);
+								    		echo date_format($date, 'm');
+								    	?>
+								    </td>
+								    <td>
+								    	<?php 
+								    		$date = date_create($value['DATE_CREATE']);
+								    		echo date_format($date, 'Y');
+								    	?>
+								    </td>
+								    <td>
+								    	<?php echo $value['TOTAL_AMOUNT']; ?>
+								    </td>
+								    <td>
+								    	<?php echo $value['DATE_CREATE'] . ' | ' . $value['TIME']; ?>
+								    </td>
+								    <td>
+								    	<?php echo number_format($value['TOTAL_MONEY'], 0, ',', ','); ?>	
+								    </td>
+								</tr>
+							<?php endforeach ?>
+							<tr>
+								<td colspan="6">
+									<input type="submit" class="btn btn-success col-6" name="export_excel" value="Xuất file excel">
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
 			</fieldset>
 			<!-- Pagination -->
 			<div id="pagi">
@@ -138,22 +169,25 @@
 				</div>
 		     </p>
 		     <p>
-		     	<div class="form-group">
-		     		<label class="col-form-label">Lọc chi tiết</label>
-		     		<div class="input-group date col-6" data-provide="datepicker">
-		     			<div class="input-group-prepend">
-					      <span class="input-group-text">
-					      	<i class="fa fa-calendar-alt" style="font-size: 20px"></i>
-					      </span>
-					    </div>
-					    <input type="text" name="date" class="form-control datepicker" autocomplete="off">
-					    <div class="input-group-addon">
-					        <span class="glyphicon glyphicon-th"></span>
-					    </div>
+		     	<form method="post">
+			     	<div class="form-group">
+			     		<label class="col-form-label">Lọc chi tiết</label>
+			     		<div class="input-group date col-6" data-provide="datepicker">
+			     			<div class="input-group-prepend">
+						      <span class="input-group-text">
+						      	<i class="fa fa-calendar-alt" style="font-size: 20px"></i>
+						      </span>
+						    </div>
+						    <input type="text" name="date" class="form-control datepicker" autocomplete="off">
+						    <div class="input-group-addon">
+						        <span class="glyphicon glyphicon-th"></span>
+						    </div>
+						</div>
+						<input type="button" class="btn btn-primary btn-income col-6 mb-2" value="Lọc thu nhập theo tháng">
+						<input type="submit" class="btn btn-success col-6" name="export_excel_all" value="Xuất toàn bộ ra file excel">
+						<input type="button" class="btn btn-danger btn-reset col-6" value="Reset">
 					</div>
-					<input type="button" class="btn btn-primary btn-income col-6" value="Lọc thu nhập theo tháng">
-					<input type="button" class="btn btn-danger btn-reset col-6" value="Reset">					
-				</div>
+				</form>
 		     </p>
 		</div>
 	</div>
