@@ -78,31 +78,89 @@
 	}
 ?>
 
-<div class="container-fluid container-login">
-	<div class="row">
-		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-			<div class="login-form">
-				<div class="card border-info mb-3">
-				  <div class="card-header text-info">
-				  	<h1>Login</h1>
-				  </div>
-				  <div class="card-body">
-				    <form method="post" action="#">
-			    		<fieldset class="form-group">
-			    			<label for="username">Email/Username</label>
-			    			<input type="text" class="form-control" id="username" placeholder="Tên đăng nhập..." name="username" autocomplete="off">
-			    		</fieldset>
-			    		<fieldset class="form-group">
-			    			<label for="pass">Password</label>
-			    			<input type="password" class="form-control" id="pass" placeholder="Mật khẩu..." name="password" autocomplete="off">
-			    		</fieldset>
-			    		<button type="submit" class="btn btn-block btn-info" name="sm-login">Login</button>
-				    </form>
-				  </div>
+<div class="wrapper-login">
+	<div class="container-fluid container-login">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="login-form">
+					<div class="card border-info mb-3">
+					  <div class="card-header text-info">
+					  	<h1>Login</h1>
+					  </div>
+					  <div class="card-body">
+					    <form method="post" action="#">
+				    		<fieldset class="form-group">
+				    			<label for="username">Username</label>
+				    			<input type="text" class="form-control" id="username" placeholder="Tên đăng nhập..." name="username" autocomplete="off">
+				    		</fieldset>
+				    		<fieldset class="form-group">
+				    			<label for="pass">Password</label>
+				    			<input type="password" class="form-control" id="pass" placeholder="Mật khẩu..." name="password" autocomplete="off">
+				    		</fieldset>
+				    		<fieldset class="form-group">
+					    		<a class="d-block btn-signup" href="#">Đăng ký</a>
+					    		<a class="d-block btn-forget" href="#">Quên mật khẩu?</a>
+					    	</fieldset>
+				    		<button type="submit" class="btn btn-block btn-info" name="sm-login">Login</button>
+					    </form>
+					  </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid container-signup">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="login-form">
+					<div class="card border-info mb-3">
+					  <div class="card-header text-info">
+					  	<h1>Sign up</h1>
+					  </div>
+					  <div class="card-body">
+					    <form method="post" action="#">
+				    		<fieldset class="form-group">
+				    			<label for="username">Username</label>
+				    			<input type="text" class="form-control" id="signup-username" placeholder="Tên đăng nhập..." name="signup-username" autocomplete="off">
+				    		</fieldset>
+				    		<fieldset class="form-group">
+				    			<label for="pass">Password</label>
+				    			<input type="password" class="form-control" id="signup-pass" placeholder="Mật khẩu..." name="signup-password" autocomplete="off">
+				    		</fieldset>
+				    		<fieldset class="form-group">
+				    			<label for="pass">Re-Password</label>
+				    			<input type="password" class="form-control" id="signup-repass" placeholder="Nhập lại mật khẩu..." name="signup-repassword" autocomplete="off">
+				    		</fieldset>
+				    		<fieldset class="form-group">
+					    		<a class="d-block btn-login" href="">Đăng nhập</a>
+					    	</fieldset>
+				    		<button type="submit" class="btn btn-block btn-info" name="sm-signup">Sign up</button>
+					    </form>
+					  </div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+	$(document).ready(function(){
+		'use stricts';
+
+		$('.btn-signup').click(function(e) {
+			e.preventDefault();
+			$('.container-login .row').animate({top:'-50%'}, 'fast');
+			$('.container-signup .row').animate({top:'50%'}, 'slow');
+		});
+		$('.btn-login').click(function(e) {
+			e.preventDefault();
+			$('.container-login .row').animate({top:'50%'}, 'slow');
+			$('.container-signup .row').animate({top:'-50%'}, 'fast');
+		});
+
+	})
+</script>
 
 <?php include_once './inc/footer.php'; ?>
